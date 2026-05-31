@@ -1,0 +1,2 @@
+# Smart-Traffic-Congestion-Prediction-and-Route-Optimization-System-Using-Machine-Learning
+ An AI web system predicting Tamil Nadu highway congestion and optimizing travel routes using ensemble ML models (LightGBM, CatBoost, XGBoost, RF) trained on weather, events, and seasonal metrics. Features a responsive Leaflet.js map, dynamic travel times, and Explainable AI (SHAP) attributions for transparent predictive commuter insights.
