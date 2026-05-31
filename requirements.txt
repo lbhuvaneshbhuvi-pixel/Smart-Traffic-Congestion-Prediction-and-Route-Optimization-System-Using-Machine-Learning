@@ -1,0 +1,10 @@
+numpy
+pandas
+scikit-learn
+xgboost
+lightgbm
+catboost
+shap
+Flask
+Flask-SQLAlchemy
+requests

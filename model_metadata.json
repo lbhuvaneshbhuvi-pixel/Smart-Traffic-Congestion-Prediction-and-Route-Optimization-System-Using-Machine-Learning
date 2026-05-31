@@ -1,0 +1,45 @@
+{
+    "best_model_name": "LightGBM",
+    "feature_names": [
+        "Hour",
+        "Day_of_Week",
+        "Month",
+        "Temperature",
+        "Humidity",
+        "Rainfall",
+        "Wind_Speed",
+        "Visibility",
+        "Road_Type_Arterial",
+        "Road_Type_Highway",
+        "Road_Type_Local",
+        "Event_Type_Festival",
+        "Event_Type_Political",
+        "Event_Type_Sports",
+        "Event_Type_nan",
+        "Is_Weekend",
+        "Junction_ID",
+        "Holiday_Indicator",
+        "Festival_Indicator"
+    ],
+    "numeric_features": [
+        "Hour",
+        "Day_of_Week",
+        "Month",
+        "Temperature",
+        "Humidity",
+        "Rainfall",
+        "Wind_Speed",
+        "Visibility"
+    ],
+    "categorical_features": [
+        "Road_Type",
+        "Event_Type"
+    ],
+    "passthrough_features": [
+        "Is_Weekend",
+        "Junction_ID",
+        "Holiday_Indicator",
+        "Festival_Indicator"
+    ],
+    "shap_available": false
+}

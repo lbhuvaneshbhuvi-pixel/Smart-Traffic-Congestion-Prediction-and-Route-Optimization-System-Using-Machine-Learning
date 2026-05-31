@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Traffic Congestion Predictor & Route Optimizer</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Leaflet Map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- Premium Glow Header -->
+    <header class="navbar navbar-expand-lg sticky-top header-custom">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <div class="brand-icon me-3">
+                    <i class="fa-solid fa-traffic-light text-warning pulse"></i>
+                </div>
+                <div>
+                    <span class="brand-title">Smart Traffic AI</span>
+                    <small class="brand-subtitle d-block">Tamil Nadu Highway Congestion & Route Optimization</small>
+                </div>
+            </a>
+            
+            <div class="ms-auto d-flex align-items-center">
+                <span class="badge badge-online me-3">
+                    <span class="badge-dot"></span> AI Engine: Active
+                </span>
+                <span id="liveClock" class="clock-display text-white-50"><i class="fa-regular fa-clock me-2"></i>Loading...</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container-fluid px-4 py-4 main-content">
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-pills custom-pills mb-4" id="dashboardTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="predict-tab" data-bs-toggle="tab" data-bs-target="#predict-pane" type="button" role="tab"><i class="fa-solid fa-map-location-dot me-2"></i>Route Optimizer & Prediction</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="analytics-tab" data-bs-toggle="tab" data-bs-target="#analytics-pane" type="button" role="tab"><i class="fa-solid fa-chart-line me-2"></i>Analytics & ML Models Benchmark</button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="dashboardTabContent">
+            <!-- TAB 1: PREDICTION & ROUTE OPTIMIZATION -->
+            <div class="tab-pane fade show active" id="predict-pane" role="tabpanel" tabindex="0">
+                <div class="row g-4">
+                    <!-- Left Side: Controls -->
+                    <div class="col-lg-4 col-md-12">
+                        <div class="card glass-card h-100">
+                            <div class="card-header border-bottom border-secondary d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0"><i class="fa-solid fa-sliders text-info me-2"></i>Prediction Parameters</h5>
+                                <button id="resetParamsBtn" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+                            </div>
+                            <div class="card-body scrollable-card">
+                                <form id="predictionForm">
+                                    <!-- Junctions selection -->
+                                    <div class="mb-4">
+                                        <label class="form-label text-white-50 fw-medium">Smart Travel Route</label>
+                                        <div class="row g-2">
+                                            <div class="col-6">
+                                                <div class="input-group">
+                                                    <span class="input-group-text bg-dark-custom border-secondary text-success"><i class="fa-solid fa-circle-dot"></i></span>
+                                                    <select class="form-select bg-dark border-secondary text-white" id="sourceJunction" required>
+                                                        <option value="1" selected>Chennai</option>
+                                                        <option value="2">Kanchipuram</option>
+                                                        <option value="3">Vellore</option>
+                                                        <option value="4">Salem</option>
+                                                        <option value="5">Coimbatore</option>
+                                                        <option value="6">Trichy</option>
+                                                        <option value="7">Madurai</option>
+                                                        <option value="8">Tirunelveli</option>
+                                                        <option value="9">Kanyakumari</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="input-group">
+                                                    <span class="input-group-text bg-dark-custom border-secondary text-danger"><i class="fa-solid fa-location-dot"></i></span>
+                                                    <select class="form-select bg-dark border-secondary text-white" id="destJunction" required>
+                                                        <option value="1">Chennai</option>
+                                                        <option value="2">Kanchipuram</option>
+                                                        <option value="3">Vellore</option>
+                                                        <option value="4">Salem</option>
+                                                        <option value="5">Coimbatore</option>
+                                                        <option value="6">Trichy</option>
+                                                        <option value="7">Madurai</option>
+                                                        <option value="8">Tirunelveli</option>
+                                                        <option value="9" selected>Kanyakumari</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Time and Forecast Horizon -->
+                                    <div class="row mb-4">
+                                        <div class="col-6">
+                                            <label class="form-label text-white-50 fw-medium">Travel Date & Time</label>
+                                            <input type="datetime-local" class="form-control bg-dark border-secondary text-white" id="predictTime">
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label text-white-50 fw-medium">Forecast Horizon</label>
+                                            <select class="form-select bg-dark border-secondary text-white" id="forecastHorizon">
+                                                <option value="15" selected>15 Mins</option>
+                                                <option value="30">30 Mins</option>
+                                                <option value="60">60 Mins</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <hr class="border-secondary my-4">
+
+                                    <!-- Weather Impact Section -->
+                                    <h6 class="text-info mb-3"><i class="fa-solid fa-cloud-sun me-2"></i>Weather Conditions</h6>
+                                    
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between">
+                                            <label class="form-label text-white-50">Temperature</label>
+                                            <span class="badge bg-secondary" id="tempVal">30°C</span>
+                                        </div>
+                                        <input type="range" class="form-range" id="weatherTemp" min="20" max="42" step="1" value="30">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between">
+                                            <label class="form-label text-white-50">Rainfall</label>
+                                            <span class="badge bg-secondary" id="rainVal">0.0 mm</span>
+                                        </div>
+                                        <input type="range" class="form-range" id="weatherRain" min="0" max="40" step="0.5" value="0">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between">
+                                            <label class="form-label text-white-50">Visibility</label>
+                                            <span class="badge bg-secondary" id="visibilityVal">10.0 km</span>
+                                        </div>
+                                        <input type="range" class="form-range" id="weatherVisibility" min="1" max="10" step="0.5" value="10">
+                                    </div>
+
+                                    <!-- Hidden humidity and wind inputs that are randomized/linked behind the scenes -->
+                                    <input type="hidden" id="weatherHumidity" value="70">
+
+                                    <hr class="border-secondary my-4">
+
+                                    <!-- Special Events and Holidays -->
+                                    <h6 class="text-info mb-3"><i class="fa-solid fa-calendar-check me-2"></i>Events & Holiday Impact</h6>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label text-white-50">Special Nearby Event</label>
+                                        <select class="form-select bg-dark border-secondary text-white" id="eventType">
+                                            <option value="None" selected>No Special Events</option>
+                                            <option value="Sports">Sports Event (IPL Match at Chepauk)</option>
+                                            <option value="Festival">Major Festival (Pongal/Diwali Shopping)</option>
+                                            <option value="Political">Political Gathering (Marina Corridor)</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-4 form-check form-switch custom-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="isHoliday">
+                                        <label class="form-check-label text-white-50 fw-medium" for="isHoliday">Public Holiday Indicator</label>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-info w-100 py-3 fw-bold text-uppercase d-flex align-items-center justify-content-center" id="analyzeBtn">
+                                        <i class="fa-solid fa-brain me-2"></i> Predict & Optimize
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Side: Leaflet Map & Prediction Results -->
+                    <div class="col-lg-8 col-md-12 d-flex flex-column gap-4">
+                        <!-- Interactive Leaflet Map -->
+                        <div class="card glass-card card-map flex-grow-1">
+                            <div class="card-header border-bottom border-secondary d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0"><i class="fa-solid fa-earth-asia text-success me-2"></i>Tamil Nadu Live Highway Traffic & Route Visualization</h5>
+                                <div class="d-flex gap-2">
+                                    <span class="badge bg-success-subtle border border-success text-success"><i class="fa-solid fa-circle me-1"></i> Low</span>
+                                    <span class="badge bg-warning-subtle border border-warning text-warning"><i class="fa-solid fa-circle me-1"></i> Moderate</span>
+                                    <span class="badge bg-danger-subtle border border-danger text-danger"><i class="fa-solid fa-circle me-1"></i> Heavy</span>
+                                    <span class="badge bg-purple-subtle border border-purple text-purple"><i class="fa-solid fa-circle me-1"></i> Severe</span>
+                                </div>
+                            </div>
+                            <div class="card-body p-0 position-relative">
+                                <div id="map" style="height: 420px; border-radius: 0 0 16px 16px;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Results Row -->
+                        <div class="row g-4">
+                            <!-- Prediction Panel -->
+                            <div class="col-md-6 col-12">
+                                <div class="card glass-card h-100 card-result" id="predictionResultCard">
+                                    <div class="card-body">
+                                        <h6 class="text-white-50 text-uppercase tracking-wider mb-2">Congestion Level Forecast</h6>
+                                        <div class="d-flex align-items-center justify-content-between mb-3">
+                                            <h3 class="mb-0 fw-bold" id="resCongestionLevel">Select source/destination and click Predict</h3>
+                                            <div class="result-badge d-flex align-items-center justify-content-center" id="resCongestionBadge">
+                                                <i class="fa-solid fa-traffic-light fs-3"></i>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row g-3 py-3 border-top border-bottom border-secondary mb-3">
+                                            <div class="col-6 border-end border-secondary">
+                                                <small class="text-white-50 d-block">Predicted Average Speed</small>
+                                                <h4 class="mb-0 fw-bold text-info" id="resSpeed">-- <small class="fs-6">km/h</small></h4>
+                                                <small class="text-white-50" id="resFreeSpeed">Free-flow: -- km/h</small>
+                                            </div>
+                                            <div class="col-6">
+                                                <small class="text-white-50 d-block">Estimated Vehicle Count</small>
+                                                <h4 class="mb-0 fw-bold text-warning" id="resVolume">--</h4>
+                                                <small class="text-success"><i class="fa-solid fa-arrow-trend-up"></i> Dynamic Flow</small>
+                                            </div>
+                                        </div>
+
+                                        <!-- Explainable AI (SHAP Value Indicators) -->
+                                        <h6 class="text-white-50 mb-2"><i class="fa-solid fa-chart-bar text-info me-2"></i>Explainable AI: Predictor SHAP Feature Impact</h6>
+                                        <div style="height: 120px; position: relative;">
+                                            <canvas id="shapChart"></canvas>
+                                        </div>
+                                        
+                                        <!-- Friendly Explanation -->
+                                        <div class="explanation-box mt-3" id="friendlyExplanation">
+                                            <i class="fa-solid fa-circle-info text-info me-2"></i>
+                                            Select routes above and execute analysis to view Explainable AI (SHAP) attributions.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Route Optimizer Options -->
+                            <div class="col-md-6 col-12">
+                                <div class="card glass-card h-100 card-result" id="routingResultCard">
+                                    <div class="card-body">
+                                        <h6 class="text-white-50 text-uppercase tracking-wider mb-2">Smart Route Suggestions</h6>
+                                        <div id="routeSavingsAlert" class="alert alert-success d-flex align-items-center py-2 d-none">
+                                            <i class="fa-solid fa-circle-check fs-5 me-2"></i>
+                                            <div>
+                                                Smart Route Option A saves you <strong id="savingsPercent">0%</strong> travel time!
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="routes-container scrollable-card" id="routesList" style="max-height: 280px;">
+                                            <div class="text-center py-5 text-white-50">
+                                                <i class="fa-solid fa-route fs-2 mb-3"></i>
+                                                <p>Execute analysis to view recommended paths and travel times</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: ANALYTICS & MACHINE LEARNING SCORECARD -->
+            <div class="tab-pane fade" id="analytics-pane" role="tabpanel" tabindex="0">
+                <div class="row g-4">
+                    <!-- Historical Analysis Trends -->
+                    <div class="col-lg-6 col-md-12">
+                        <div class="card glass-card h-100">
+                            <div class="card-header border-bottom border-secondary">
+                                <h5 class="card-title mb-0"><i class="fa-solid fa-chart-simple text-info me-2"></i>Tamil Nadu Highway Traffic Trends (Historical Log Analysis)</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-4">
+                                    <div class="col-12">
+                                        <h6 class="text-white-50 mb-2">Average Traffic Volume Profile (By Hour of Day)</h6>
+                                        <div style="height: 200px; position: relative;">
+                                            <canvas id="volumeHourChart"></canvas>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <h6 class="text-white-50 mb-2">Weather Speeds (Clear vs. Rainy)</h6>
+                                        <div style="height: 180px; position: relative;">
+                                            <canvas id="weatherSpeedsChart"></canvas>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <h6 class="text-white-50 mb-2">Congestion Level Distribution</h6>
+                                        <div style="height: 180px; position: relative;">
+                                            <canvas id="congestionDistributionChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ensemble ML Models Evaluation Scorecard -->
+                    <div class="col-lg-6 col-md-12">
+                        <div class="card glass-card h-100">
+                            <div class="card-header border-bottom border-secondary d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0"><i class="fa-solid fa-microchip text-success me-2"></i>Ensemble ML Models Comparison Benchmark</h5>
+                                <span class="badge bg-success-subtle border border-success text-success">Best Model: LightGBM / XGBoost</span>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-white-50">
+                                    Evaluation scores comparing Random Forest, XGBoost, LightGBM, and CatBoost models. Trained on historical Tamil Nadu highway transit data.
+                                </p>
+                                
+                                <div class="table-responsive mb-4">
+                                    <table class="table table-custom border-secondary" id="comparisonTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Model</th>
+                                                <th>Accuracy</th>
+                                                <th>Precision</th>
+                                                <th>Recall</th>
+                                                <th>F1-Score</th>
+                                                <th>ROC-AUC</th>
+                                                <th>Train Time</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- To be populated via API -->
+                                            <tr><td colspan="7" class="text-center py-4 text-white-50">Loading benchmark scorecard...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <h6 class="text-white-50 mb-2">Model F1-Score & Accuracy Comparison</h6>
+                                <div style="height: 220px; position: relative;">
+                                    <canvas id="modelMetricsChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet Map JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Bootstrap 5 Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS Logic -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

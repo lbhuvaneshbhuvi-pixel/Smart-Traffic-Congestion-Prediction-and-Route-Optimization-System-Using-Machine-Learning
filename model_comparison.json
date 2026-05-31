@@ -1,0 +1,34 @@
+{
+    "Random Forest": {
+        "Accuracy": 0.8645,
+        "Precision": 0.8643,
+        "Recall": 0.8645,
+        "F1-Score": 0.862,
+        "ROC-AUC": 0.9521,
+        "TrainingTime": 0.41
+    },
+    "XGBoost": {
+        "Accuracy": 0.8699,
+        "Precision": 0.8718,
+        "Recall": 0.8699,
+        "F1-Score": 0.8674,
+        "ROC-AUC": 0.9596,
+        "TrainingTime": 0.5
+    },
+    "LightGBM": {
+        "Accuracy": 0.8706,
+        "Precision": 0.8717,
+        "Recall": 0.8706,
+        "F1-Score": 0.8681,
+        "ROC-AUC": 0.9587,
+        "TrainingTime": 0.36
+    },
+    "CatBoost": {
+        "Accuracy": 0.8706,
+        "Precision": 0.8728,
+        "Recall": 0.8706,
+        "F1-Score": 0.8674,
+        "ROC-AUC": 0.9598,
+        "TrainingTime": 0.99
+    }
+}
